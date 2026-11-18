@@ -10,6 +10,12 @@ A RESTful API for a quiz app. Users take quizzes on AI development concepts, tra
 - Vitest for tests
 - oxlint for linting
 
+## Commands
+
+- `npm run db:seed`: builds, then creates 2 users and 2 AI quizzes (5 questions each) through `UsersService`/`QuizzesService` after the API's `ValidationPipe`. Idempotent. Data lives in `src/seed/seed-data.ts`.
+- `npm run smoke` / `EMAIL_FAIL=true npm run smoke`: builds, then runs `scripts/smoke.mjs` against a fresh, migrated and seeded temp database. Covers every API capability end to end. `SMOKE_BASE_URL=http://localhost:3000 node scripts/smoke.mjs` targets a running server instead.
+- Any app instance polling the same database (e.g. `npm run start:dev` on `dev.db`) also sends that database's notifications.
+
 ## Rules
 
 - **Validate DTOs.** Every request body, query, and param goes through a DTO class with validation decorators. Never trust raw input.

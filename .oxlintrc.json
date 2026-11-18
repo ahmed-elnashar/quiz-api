@@ -39,5 +39,15 @@
     "node_modules/**",
     "src/generated/**",
     "prisma/migrations/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "scripts/**"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
+    }
   ]
 }

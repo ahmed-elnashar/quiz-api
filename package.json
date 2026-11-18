@@ -11,7 +11,9 @@
     "lint": "oxlint",
     "db:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed": "nest build && node dist/seed/run-seed.js",
+    "smoke": "nest build && node scripts/smoke.mjs"
   },
   "keywords": [],
   "author": "",

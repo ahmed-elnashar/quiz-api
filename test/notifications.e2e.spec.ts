@@ -206,4 +206,56 @@ describe('Notifications (e2e)', () => {
       await expect(worker.tick()).resolves.toBeUndefined();
     });
   });
+
+  describe('GET /api/users/:userId/notifications', () => {
+    it('shows delivery status and the email payload', async () => {
+      const { attemptId } = await submitAttempt();
+      const now = new Date();
+      await worker.processDue(now);
+
+      const res = await fetch(t.url(`/users/${user.id}/notifications?limit=100`));
+      const body = (await res.json()) as { items: Record<string, unknown>[]; total: number };
+      const item = body.items.find((n) => n.attemptId === attemptId);
+
+      expect(res.status).toBe(200);
+      expect(item).toMatchObject({
+        type: 'QUIZ_RESULT',
+        channel: 'EMAIL',
+        status: 'SENT',
+        attempts: 1,
+        lastError: null,
+        sentAt: now.toISOString(),
+        payload: {
+          userName: 'Grace Hopper',
+          userEmail: user.email,
+          quizTitle: quiz.title,
+          score: { correct: 4, total: 5 },
+          percentage: 80,
+          message: 'You scored 80%. Great job!',
+        },
+      });
+    });
+
+    it('shows lastError and attempts while delivery is failing', async () => {
+      process.env.EMAIL_FAIL = 'true';
+      const { attemptId } = await submitAttempt();
+      await worker.processDue(new Date());
+
+      const body = (await (await fetch(t.url(`/users/${user.id}/notifications?limit=100`))).json()) as {
+        items: Record<string, unknown>[];
+      };
+
+      expect(body.items.find((n) => n.attemptId === attemptId)).toMatchObject({
+        status: 'PENDING',
+        attempts: 1,
+        lastError: 'Mock email delivery failed (EMAIL_FAIL=true)',
+        sentAt: null,
+      });
+    });
+
+    it('returns 404 for an unknown user', async () => {
+      const res = await fetch(t.url('/users/missing-user/notifications'));
+      expect(res.status).toBe(404);
+    });
+  });
 });
