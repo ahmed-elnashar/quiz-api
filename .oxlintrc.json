@@ -19,6 +19,19 @@
       {
         "allowWithDecorator": true
       }
+    ],
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": [
+          "_count",
+          "_avg",
+          "_max",
+          "_min",
+          "_sum",
+          "_all"
+        ]
+      }
     ]
   },
   "ignorePatterns": [

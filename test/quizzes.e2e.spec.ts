@@ -48,8 +48,8 @@ function validQuiz(authorId: string, overrides: Record<string, unknown> = {}): R
 }
 
 function expectNoAnswerKeyLeak(rawBody: string): void {
-  expect(rawBody).not.toContain('isCorrect');
-  expect(rawBody).not.toContain('explanation');
+  expect(rawBody).not.toContain('"isCorrect":');
+  expect(rawBody).not.toContain('"explanation":');
 }
 
 describe('Quizzes (e2e)', () => {

@@ -12,7 +12,11 @@ export default defineConfig({
     environment: 'node',
     passWithNoTests: true,
     globalSetup: ['test/global-setup.ts'],
-    env: { DATABASE_URL: TEST_DATABASE_URL },
+    env: {
+      DATABASE_URL: TEST_DATABASE_URL,
+      // Tests drive the worker directly with NotificationsWorker.processDue(now).
+      NOTIFICATIONS_WORKER_ENABLED: 'false',
+    },
     // All test files share one SQLite file; run them one at a time.
     fileParallelism: false,
   },

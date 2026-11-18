@@ -75,6 +75,8 @@ model Attempt {
   /// Number of correct answers, set on submit.
   score          Int?
   totalQuestions Int?
+  /// Whole-number percentage (0-100), set on submit.
+  percentage     Int?
   startedAt      DateTime        @default(now())
   completedAt    DateTime?
   answers        AttemptAnswer[]
@@ -100,26 +102,28 @@ model AttemptAnswer {
 }
 
 model Notification {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  attemptId String?   @unique
-  attempt   Attempt?  @relation(fields: [attemptId], references: [id])
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  attemptId     String?   @unique
+  attempt       Attempt?  @relation(fields: [attemptId], references: [id])
   /// QUIZ_RESULT
-  type      String
+  type          String
   /// EMAIL
-  channel   String    @default("EMAIL")
+  channel       String    @default("EMAIL")
   /// PENDING | SENT | FAILED
-  status    String    @default("PENDING")
-  /// JSON string: subject, score, quiz title.
-  payload   String
-  tryCount  Int       @default(0)
-  lastError String?
-  nextTryAt DateTime  @default(now())
-  sentAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  status        String    @default("PENDING")
+  /// JSON string, see NotificationPayload in src/notifications.
+  payload       String
+  /// Number of send attempts made so far.
+  attempts      Int       @default(0)
+  lastError     String?
+  /// When the worker may next try to send; also used as the claim lease.
+  nextAttemptAt DateTime  @default(now())
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  @@index([status, nextTryAt])
+  @@index([status, nextAttemptAt])
   @@index([userId])
 }
