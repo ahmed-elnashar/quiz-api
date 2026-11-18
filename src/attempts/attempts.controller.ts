@@ -4,7 +4,7 @@ import { AttemptsService, type StartedAttempt } from './attempts.service';
 // DTO classes must be value imports: ValidationPipe reads them from decorator metadata.
 import { StartAttemptDto } from './dto/start-attempt.dto';
 import { SubmitAttemptDto } from './dto/submit-attempt.dto';
-import { UserAttemptParamsDto, UserIdParamDto } from './dto/user-params.dto';
+import { UserAttemptParamsDto, UserIdParamDto } from '../users/dto/user-params.dto';
 
 @Controller('users/:userId/attempts')
 export class AttemptsController {

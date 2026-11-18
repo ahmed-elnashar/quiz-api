@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import type { Paginated } from '../common/dto/pagination-query.dto';
 import type { AttemptResult } from '../attempts/answer-key.repository';
 // DTO classes must be value imports: ValidationPipe reads them from decorator metadata.
-import { UserAttemptParamsDto, UserIdParamDto } from '../attempts/dto/user-params.dto';
+import { UserAttemptParamsDto, UserIdParamDto } from '../users/dto/user-params.dto';
 import { ListAttemptsQueryDto } from './dto/list-attempts-query.dto';
 import { type AttemptDetail, type AttemptSummary, ProgressService, type ProgressStats } from './progress.service';
 

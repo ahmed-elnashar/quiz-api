@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client';
 import type { Paginated } from '../common/dto/pagination-query.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
 import type { CreateQuizDto } from './dto/create-quiz.dto';
 import type { ListQuizzesQueryDto } from './dto/list-quizzes-query.dto';
 import {
@@ -13,16 +14,13 @@ import {
 
 @Injectable()
 export class QuizzesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly users: UsersService,
+  ) {}
 
   async create(dto: CreateQuizDto): Promise<PublicQuizDetail> {
-    const author = await this.prisma.user.findUnique({
-      where: { id: dto.authorId },
-      select: { id: true },
-    });
-    if (!author) {
-      throw new NotFoundException(`User ${dto.authorId} not found`);
-    }
+    await this.users.assertExists(dto.authorId);
 
     // Positions are 1-based and follow the order of the request arrays.
     return this.prisma.quiz.create({
