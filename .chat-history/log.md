@@ -83,3 +83,23 @@
 - user_prompt: "let's commit the current changes"
 - assistant_response_summary: "Committed the seed (src/seed), GET /api/users/:userId/notifications, scripts/smoke.mjs, seed and notification tests, createValidationPipe extraction, npm scripts (db:seed, smoke), prisma seed config, oxlint scripts override, CLAUDE.md Commands section and the chat log (including this entry) as 'feat: add seed data, notifications endpoint and smoke script' on branch chore/scaffold. Not pushed (no remote)."
 - files_affected: "none"
+---
+- timestamp: "2026-11-18T20:29:59Z"
+- user_prompt: "let's run a code review on this project: a deep code review that follow the clean code rules, let's use the debate-review skill between two agents (opus and fable) and give me the summary of the results with priorities. (don't resolve any comments)"
+- assistant_response_summary: "Ran the debate-review skill in --local mode with --base master (the initial commit), so the whole project was reviewed. Main reviewer: Opus 5.5 (lane review-main). Debate reviewer: Fable 5.2, using a new global delegate lane review-debate-fable added to ~/.config/delegate-skills/config.json; existing lanes unchanged. Result: 0 P0, 0 P1, 2 P2, both agreed by the reviewers. F1: notifications.worker.ts claim/processDue filter attempts < MAX_SEND_ATTEMPTS, so a final claim with no recorded outcome stays PENDING forever. F2: package.json smoke script points at a missing scripts/smoke.mjs; this was stale, because the snapshot was taken before commit 58a17c0 added the file. Noted that the skill's brief excludes naming, style and extraction findings, so clean-code coverage is limited, and offered a separate clean-code pass. Nothing was fixed or posted."
+- files_affected: "none"
+---
+- timestamp: "2026-11-18T20:34:22Z"
+- user_prompt: "give me a series of curl commands to test out the flow, number them starting from 1 -> until we finish."
+- assistant_response_summary: "Wrote a numbered 1-25 curl + jq flow against http://localhost:3000/api: list/view seeded quizzes with leak check, create user (unique email) + 409 duplicate, 400 invalid quiz, create own 'LLM Basics' quiz, start attempt, 409 result before submit, 400 foreign answer, submit 4/5 -> 80% (answers built with jq from known option texts), 409 resubmit, notification SENT after 3s, retake 5/5 -> 100%, history 2 attempts, attempt detail, first-attempt result, progress stats (avg 90, best 100), then restart with EMAIL_FAIL=true: submit still 201, PENDING with lastError after 3s, FAILED after 3 tries, result intact. Verified the exact commands in zsh against an isolated seeded instance in both email modes; avoided clobbering $USER and used jq <<< to avoid zsh echo escapes. No project files changed."
+- files_affected: "none"
+---
+- timestamp: "2026-11-18T20:35:35Z"
+- user_prompt: "let's add the a readme file with a summary of the project, and also the project architeture, and how to install and run it"
+- assistant_response_summary: "Created README.md: project summary and features; tech stack; getting started (Node 22+, npm install, cp .env.example .env, npm run db:migrate, npm run db:seed, npm run start:dev, build/start); environment variables (DATABASE_URL, PORT, EMAIL_FAIL, NOTIFICATIONS_WORKER_ENABLED, NOTIFICATIONS_POLL_MS); npm scripts incl. smoke and SMOKE_BASE_URL; API route table for users, quizzes, attempts, progress and notifications; curl+jq example of taking a quiz; error status table (AllExceptionsFilter); architecture: src layout, request layers (ValidationPipe -> controller -> service -> Prisma -> filter), data model, answer-key privacy (quiz.selects.ts, AnswerKeyRepository), submit flow in one transaction, NotificationsWorker claim/lease/backoff 2s/4s/FAILED after 3 tries; testing section. Checked claims against the code (list response shape, mock email logging, backoff). No code changes, not committed."
+- files_affected: "README.md"
+---
+- timestamp: "2026-11-18T20:45:16Z"
+- user_prompt: "let's commit everything"
+- assistant_response_summary: "Committed README.md and the chat log (including this entry) as 'docs: add README with setup, API and architecture' on branch chore/scaffold. Docs-only change, so /verify was not run. Not pushed (no remote)."
+- files_affected: "none"
