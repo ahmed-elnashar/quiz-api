@@ -63,3 +63,13 @@
 - user_prompt: "let's start by creating the users endpoints too, so we can create, and store users"
 - assistant_response_summary: "Added POST /api/users (CreateUserDto: email trimmed+lowercased with IsEmail, name trimmed 1-100 chars; 409 if email taken via pre-check, concurrent duplicates hit the unique index -> P2002 -> 409) and GET /api/users/:userId (404 if missing), returning publicUserSelect {id, email, name, createdAt}. UsersController registered via UsersModule (now in AppModule). QuizzesService now uses UsersService.assertExists for the author. Moved user-params.dto.ts from attempts/dto to users/dto. 13 new e2e tests incl. case-insensitive and concurrent duplicate 409s and a full API-only flow (user -> quiz -> attempt -> submit -> progress). Verified with curl against the built server. /verify passed (130 tests, 0 lint warnings)."
 - files_affected: "src/users/dto/create-user.dto.ts, src/users/users.service.ts, src/users/users.controller.ts, src/users/users.module.ts, src/users/dto/user-params.dto.ts (moved from src/attempts/dto/user-params.dto.ts), src/attempts/attempts.controller.ts, src/progress/progress.controller.ts, src/quizzes/quizzes.service.ts, src/quizzes/quizzes.module.ts, src/app.module.ts, test/users.e2e.spec.ts"
+---
+- timestamp: "2026-11-18T20:21:24Z"
+- user_prompt: "let's commit the current changes"
+- assistant_response_summary: "Committed the users endpoints, quizzes refactor to UsersService.assertExists, the user-params DTO move, users e2e tests and the chat log as 091b939 'feat: add users endpoints' on branch chore/scaffold. Not pushed (no remote). This log entry is written after the commit, so it is uncommitted."
+- files_affected: "none"
+---
+- timestamp: "2026-11-18T20:22:09Z"
+- user_prompt: "let's always commit the .chat-history folder"
+- assistant_response_summary: "Added an 'Always commit .chat-history/' section to CLAUDE.md: for any commit, append the log entry first (without the unknown commit hash), stage .chat-history/ with the other changes, then commit; with several commits, include it in the last one; check git status shows nothing left under .chat-history/. Adjusted the 'append as the last action' rule with an exception for commits. Committed CLAUDE.md and the pending chat log, including this entry, as 'chore: always commit the chat history log'."
+- files_affected: "CLAUDE.md"

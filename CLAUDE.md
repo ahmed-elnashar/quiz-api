@@ -34,7 +34,16 @@ Append one entry to `.chat-history/log.md` for every prompt/response pair. Never
 - If `.chat-history/` or `log.md` does not exist, create it.
 - Never add `.chat-history/` (or anything inside it) to `.gitignore` or any other ignore file. It is tracked on purpose.
 - Only append. Never delete, rewrite, or reorder earlier entries.
-- Append as the last action of the response, after all other file changes, so `files_affected` is complete.
+- Append as the last action of the response, after all other file changes, so `files_affected` is complete. Exception: when the response makes a git commit, see below.
+
+## Always commit `.chat-history/`
+
+Every git commit must include `.chat-history/`, so the log never sits uncommitted.
+
+- When a response makes a commit, finish all other file changes, then append this response's log entry, then stage `.chat-history/` together with the other changes (`git add -A`, or `git add .chat-history/` when staging selectively), then commit.
+- The commit hash is not known before committing, so do not put it in that entry. Describe the commit by its message instead.
+- If a response makes several commits, include `.chat-history/` in the last one.
+- Before committing, check that `git status` shows no leftover change under `.chat-history/` after staging.
 
 Use exactly this format:
 
