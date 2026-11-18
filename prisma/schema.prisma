@@ -1,0 +1,125 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+// The connection URL lives in prisma.config.ts (Prisma 7).
+datasource db {
+  provider = "sqlite"
+}
+
+// Status/type columns are plain strings; allowed values are defined in
+// src/common/constants.ts.
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  createdAt     DateTime       @default(now())
+  quizzes       Quiz[]         @relation("QuizAuthor")
+  attempts      Attempt[]
+  notifications Notification[]
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  topic       String
+  authorId    String
+  author      User       @relation("QuizAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime   @default(now())
+  questions   Question[]
+  attempts    Attempt[]
+
+  @@index([topic])
+  @@index([authorId])
+}
+
+model Question {
+  id          String          @id @default(cuid())
+  quizId      String
+  quiz        Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text        String
+  /// Feedback; exposed only in completed attempt results.
+  explanation String?
+  position    Int
+  options     Option[]
+  answers     AttemptAnswer[]
+
+  @@unique([quizId, position])
+}
+
+model Option {
+  id         String          @id @default(cuid())
+  questionId String
+  question   Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  /// NEVER select outside grading or completed attempt results.
+  isCorrect  Boolean
+  position   Int
+  answers    AttemptAnswer[]
+
+  @@unique([questionId, position])
+}
+
+model Attempt {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
+  quizId         String
+  quiz           Quiz            @relation(fields: [quizId], references: [id])
+  /// IN_PROGRESS | COMPLETED
+  status         String          @default("IN_PROGRESS")
+  /// Number of correct answers, set on submit.
+  score          Int?
+  totalQuestions Int?
+  startedAt      DateTime        @default(now())
+  completedAt    DateTime?
+  answers        AttemptAnswer[]
+  notification   Notification?
+
+  @@index([userId, status])
+  @@index([quizId])
+}
+
+model AttemptAnswer {
+  id         String   @id @default(cuid())
+  attemptId  String
+  attempt    Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  /// null = left unanswered.
+  optionId   String?
+  option     Option?  @relation(fields: [optionId], references: [id])
+  /// Grading result saved at submit.
+  isCorrect  Boolean
+
+  @@unique([attemptId, questionId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  attemptId String?   @unique
+  attempt   Attempt?  @relation(fields: [attemptId], references: [id])
+  /// QUIZ_RESULT
+  type      String
+  /// EMAIL
+  channel   String    @default("EMAIL")
+  /// PENDING | SENT | FAILED
+  status    String    @default("PENDING")
+  /// JSON string: subject, score, quiz title.
+  payload   String
+  tryCount  Int       @default(0)
+  lastError String?
+  nextTryAt DateTime  @default(now())
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, nextTryAt])
+  @@index([userId])
+}

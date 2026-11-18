@@ -31,6 +31,7 @@ Before answering the first prompt, read `.chat-history/log.md` for context from 
 Append one entry to `.chat-history/log.md` for every prompt/response pair. Never skip an exchange, including short or conversational ones.
 
 - If `.chat-history/` or `log.md` does not exist, create it.
+- Never add `.chat-history/` (or anything inside it) to `.gitignore` or any other ignore file. It is tracked on purpose.
 - Only append. Never delete, rewrite, or reorder earlier entries.
 - Append as the last action of the response, after all other file changes, so `files_affected` is complete.
 
